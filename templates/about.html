@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Natural Language to SQL Query Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">NL2SQL Soccer</a>
+            <div class="nav-links">
+                <a href="/about">About</a>
+                <a href="/dataset">Dataset</a>
+                <a href="/paper">Paper</a>
+                <a href="https://github.com/yourusername/natural-language-soccer-query" target="_blank">GitHub</a>
+                <a href="http://127.0.0.1:5005/" target="_blank">Visualizations Gallery</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>About This Project</h1>
+
+        <section class="content-section">
+            <h2>Project Overview</h2>
+            <p>
+                This project demonstrates the application of natural language processing and machine learning
+                to convert English questions about Premier League soccer data into SQL queries. The system
+                leverages Google's Gemini AI model to understand natural language and generate appropriate
+                database queries.
+            </p>
+        </section>
+
+        <section class="content-section">
+            <h2>How It Works</h2>
+            <ol>
+                <li>Users enter questions in plain English about Premier League soccer data</li>
+                <li>The system uses Gemini AI to convert the question into an SQL query</li>
+                <li>The query is executed against a MariaDB database containing Premier League statistics</li>
+                <li>Results are displayed in a table format</li>
+                <li>Optional visualizations can be generated to better understand the data</li>
+            </ol>
+        </section>
+
+        <section class="content-section">
+            <h2>Technology Stack</h2>
+            <ul>
+                <li>Backend: Python, Flask</li>
+                <li>Database: MariaDB</li>
+                <li>AI Model: Google Gemini</li>
+                <li>Frontend: HTML, CSS, JavaScript</li>
+                <li>Data Source: Fantasy Premier League API</li>
+            </ul>
+        </section>
+
+        <section class="content-section">
+            <h2>Example Questions</h2>
+            <ul>
+                <li>"Who are the top 5 goal scorers this season?"</li>
+                <li>"Which team has the most clean sheets?"</li>
+                <li>"Show me players with more than 5 assists"</li>
+                <li>"What is the average goals per game for each team?"</li>
+            </ul>
+        </section>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+Data Schema:
+TABLE players
+first_name VARCHAR(50),
+second_name VARCHAR(50)
+
+TABLE teams
+short_name VARCHAR(50),
+team_name VARCHAR(50)
+
+You will receive a natural language question. Your job is to find all the partial matches for either the player names or the team names in the question.
+
+Write a SQL query in one line with no comments that gives all the partial matches for the player names in the following question. If you see only one word for a name, assume it is the second name. Return only first and last name.
+IMPORTANT: Here are some team names and their abbreviations, if you see any of these in the question, these are NOT player names. Instead, you would write a SQL query in one line with no comments that gives all the partial matches for the team names.
+
+short_name | team_name
+ARS | Arsenal
+AVL | Aston Villa
+BOU | Bournemouth
+BRE | Brentford
+BHA | Brighton
+CHE | Chelsea
+CRY | Crystal Palace
+EVE | Everton
+FUL | Fulham
+IPS | Ipswich
+LEI | Leicester
+LIV | Liverpool
+MCI | Man City
+MUN | Man Utd
+NEW | Newcastle
+NFO | Nott'm Forest
+SOU | Southampton
+TOT | Spurs
+WHU | West Ham
+WOL | Wolves
+
+Common Aliases of team names (if you see any of these aliases, convert the team name into either the short_name or team_name given above when writing the SQL query.):
+West Ham United, West Ham UTD = West Ham
+Nottingham Forest = Nott'm Forest
+Tottenham Hotspur, Tottenham = Spurs
+Newcastle United, Newcastle UTD = Newcastle
+Manchester United = Man United
+Manchester City = Man City
+
+
+IMPORTANT: If you find no player names or no team names return the following SQL query: SELECT * FROM teams WHERE 1 = 0;
+
+Example Question: How many goals has Cole Palmer scored?
+Example Answer: SELECT first_name, second_name FROM players WHERE (first_name LIKE '%Cole%' AND second_name LIKE '%Palmer%') OR (first_name LIKE '%Palmer%' AND second_name LIKE '%Cole%');
+
+Example Question: How many assists does Saka have?
+Example Answer: SELECT first_name, second_name FROM players WHERE (first_name LIKE '%Saka%' OR second_name LIKE '%Saka%');
+
+Example Question: Who is the top goalscorer on Liverpool?
+Example Answer: SELECT team_name, short_name FROM teams WHERE team_name LIKE '%Liverpool%';
+
+Example Question: Who is the top goalscorer on Chelsea?
+Example Answer: SELECT team_name, short_name FROM teams WHERE team_name LIKE '%Chelsea%';
+
+Example Question: What are the names of the players on Crystal Palace?
+Example Answer: SELECT team_name, short_name FROM teams WHERE team_name LIKE '%Crystal Palace%';
+
+Example Question: Who is the top goalscorer on SOU?
+Example Answer: SELECT team_name, short_name FROM teams WHERE short_name LIKE '%SOU%';
+
+Example Question: Who is the top goalscorer on Tottenham Hotspur?
+Example Answer: SELECT team_name, short_name FROM teams WHERE team_name LIKE '%Spurs%';
+Example Reasoning: In the dataset, Tottenham Hotspur is represented as Spurs. Make sure to match the name of the team exactly, use the table provided as reference.
+
+Question:

@@ -1,0 +1,214 @@
+Suppose you are an expert in semantic parsing. Your task is to translate given english questions to SQL queries for MariaDB. Don't leave any comments on the SQL query. Here is the schema of the database which contains all players currently in the English Premier League:
+
+I will give table descriptions and column descriptions to help you understand which tables and columns to use for which questions. I am separating the table/column names with the description with a dash symbol
+When a question asks about any player statistic, make sure to return only that player's statistic the question is asking for. For example if the question asks how many goals has Erling Haaland scored then you would return: SELECT goals_scored FROM players WHERE last_name = 'Haaland'; Or you could also do: SELECT goals_scored FROM players WHERE first_name = 'Erling' AND second_name = 'Haaland';
+When a question asks about any team statistic, make sure to return only that team's statistic the question is asking for. For example if the question asks how many wins the Chelsea team has then you would return: SELECT wins FROM teams WHERE team_name = 'Chelsea'; Or if the question asks how many wins CHE has then you would return: SELECT wins FROM teams WHERE short_name = 'CHE';
+When a question asks about a statistic for all past matches of a player make sure to use the players table. This table has the information of all past matches of players in the league.
+
+
+TABLE players - this table includes all players in the premier league currently and their corresponding stats for this current season only
+    player_id INT PRIMARY KEY, - id of players in the league
+    first_name VARCHAR(50), - player first name
+    second_name VARCHAR(50), - player last name
+    player_position VARCHAR(50), - player position, can be Goalkeeper, Defender, Midfielder, or Forward
+    team_id INT, - id of teams in the league
+    team_name VARCHAR(50), - team name
+    form DOUBLE, - the current form of a given player which means how well they are playing, it is the average number of points he has accumulated per match, calculated on the basis of every game his team has played in the last 30 days
+    points_per_game DOUBLE, - average number of points per game
+    starts INT, - how many times a player has started a game
+    minutes INT, - how many minutes a player has played
+    goals_scored INT, - how many goals a player has scored
+    assists INT, - how many assists a player has
+    yellow_cards INT, - how many yellow cards a player has received
+    red_cards INT, - how many red cards a player has received
+    penalties_missed INT, - how many penalties a player has missed
+    own_goals INT, - how many own goals a player has scored
+    goals_conceded INT, - the number of goals a player has conceded, also described as the number of goals a player's teams has been scored on while the player was playing
+    saves INT, - how many saves a player has, for a query asking for this stat you do not need to filter out by goalkeepers because an outfield player will have 0 saves
+    clean_sheets INT, - how many clean sheets a player has, clean sheets will also apply for outfield players in this dataset
+    penalties_saved INT, - how many penalties a player has saved, for a query asking for this stat you do not need to filter out by goalkeepers because an outfield player will have 0 penalties saves
+    goals_per_90 DOUBLE, - the number of goals scored per 90 minutes of a player
+    assists_per_90 DOUBLE, - the number of assists given per 90 minutes of a player
+    goals_conceded_per_90 DOUBLE, - the number of goals conceded per 90 minutes of a player, for a query asking for this stat you do not need to filter out by goalkeepers because an outfield player will have 0 goals conceded per 90 minutes
+    saves_per_90 DOUBLE, - the number of saves per 90 minutes of a player, for a query asking for this stat you do not need to filter out by goalkeepers because an outfield player will have 0 saves per 90 minutes
+    clean_sheets_per_90 DOUBLE, - the number of clean sheets per 90 minutes, for a query asking for this stat you do not need to filter out by goalkeepers because an outfield player will have 0 clean sheets per 90 minutes
+    expected_goals DOUBLE, - how many expected goals a player has
+    expected_assists DOUBLE, - how many expected assists a player has
+    expected_goal_involvements DOUBLE, - how many expected goals involvements a player has
+    expected_goals_conceded DOUBLE, - how many expected goals conceded a player has
+    expected_goals_per_90 DOUBLE, - how many expected goals per 90 minutes a player has
+    expected_assists_per_90 DOUBLE, - how many expected assists per 90 minutes a player has
+    expected_goal_involvements_per_90 DOUBLE, - how many expected goal involvements per 90 minutes a player has
+    expected_goals_conceded_per_90 DOUBLE, - how many expected goals conceded per 90 minutes a player has
+    ict_index DOUBLE, - the ict index of a player (this stands for the Influence, Creativity, and Threat Index all combined)
+    influence DOUBLE, - the influence of a player
+    creativity DOUBLE, - the creativity of a player
+    threat DOUBLE, - the threat of a player
+    form_rank INT, - the form rank of a player compared to all other players
+    form_rank_type INT, - the form rank of a player compared to all other players of that player position type
+    ict_index_rank INT, - the ict index rank of a player compared to all other players
+    ict_index_rank_type INT, - the ict index rank of a player compared to all other players of that player position type
+    influence_rank INT, - the influence rank of a player compared to all other players
+    influence_rank_type INT, - the influence rank of a player compared to all other players of that player position type
+    creativity_rank INT, - the creativity rank of a player compared to all other players
+    creativity_rank_type INT, - the creativity rank of a player compared to all other players of that player position type
+    threat_rank INT, - the threat rank of a player compared to all other players
+    threat_rank_type INT, - the threat rank of a player compared to all other players of that player position type
+    points_per_game_rank INT, the points per game rank of a player compared to all other players
+    points_per_game_rank_type INT, - the points per game rank of a player compared to all other players of that player position type
+    total_points INT - the total points scored by a player, this is not the number of points a team has scored or the number of goals a player has scored. This is just a metric used by Fantasy Premier League
+
+
+TABLE teams - use this table for queries asking about teams, team data this season only
+    team_id INT PRIMARY KEY, - team id
+    team_name VARCHAR(50), - team name
+    short_name VARCHAR(50), - team name abbreviation
+    position INT, - current league standing position of a team, first place would be 1 and last place would be 20
+    played INT, - how many matches a team has played
+    win INT, - how many wins a teams has
+    draw INT, - how many draws/ties a team has
+    loss INT, - how many losses a team has
+    points INT, - how many points a team has, this determines their position on the league table
+    strength INT - the strength of a team, 1 being the weakest strength and 5 being the strongest team
+
+
+TABLE player_history - this table shows the stats of a certain player in all of their previous seasons in the english premier league, each row is their total stats by season, use this table for queries asking about previous seasons of a certain player
+    season_name VARCHAR(50) PRIMARY KEY, - the previous season a player played in the premier league
+    total_points INT, - the total points a player scored in that season, this is a fantasy premier league metric, do not use this for teams points or goals scored queries
+    minutes INT, - total minutes played during that season
+    goals_scored INT, - total goals scored during that season
+    assists INT, - total assits given during that season
+    clean_sheets INT, - number of clean sheets during that season
+    goals_conceded INT, - how many goals conceded during that season
+    own_goals INT, - own goals scored during that season
+    penalties_saved INT, - penalites saved during that season
+    penalties_missed INT, - penalties missed during that season
+    yellow_cards INT, - yellow cards received during that season
+    red_cards INT, - red cards received during that season
+    saves INT, - number of saves during that season
+    starts INT, - number of games started during that season
+    influence DOUBLE, - the influence of a player that season
+    creativity DOUBLE, - the creativity of a player that season
+    threat DOUBLE, - the threat of a player that season
+    ict_index DOUBLE, - the ict index of a player that season
+    expected_goals DOUBLE, - the expected goals of a player that season
+    expected_assists DOUBLE, - the expected assists of a player that season
+    expected_goal_involvements DOUBLE, - the expected goal involvements of a player that season
+    expected_goals_conceded DOUBLE - the expected goals conceded of a player that season
+
+
+
+TABLE player_past - this table shows all of the past matches of only a single player only for the current season, each row is a match and a week since only one match is played a week. When a query asks about a certain player's specific past matches this season you would use this table. If a query asks for information over past stats of a single player do not use this table, instead use the players table as this will be easier for retrieving.
+    player_id INT PRIMARY KEY, - the player id, this will be the same value every row because this entire table is for a single player
+    event INT, - the gameweek a game occured, for example if it is 1 here, that was gameweek 1
+    was_home BOOLEAN, - is true if the player played a home game for this match and is false if the player played an away game for this match
+    opponent_team INT, - id of the opponent team for this match
+    opponent_team_name VARCHAR(50), - team name of the opponent team for this match
+    team_h_score INT, - home team score for this match
+    team_a_score INT, - away team score for this match
+    minutes INT, - how many minutes this player (player id player) played for the game this gameweek
+    goals_scored INT, - how many goals this player scored on this week or match
+    assists INT, - how many assists a player gave on this week or match
+    clean_sheets INT, - determines whether or not this player and his team held a clean sheet for this match. If they held a clean sheet then it will be a 1, if they did not hold a clean sheet then it will be 0
+    goals_conceded INT, - the number of goals conceded this player had during this week or match
+    own_goals INT, - number of own goals a player scored on this particular week or match
+    penalties_saved INT, - number of penalties this player saved on a match or week
+    penalties_missed INT, - number of penalties this player missed on a match or week
+    yellow_cards INT, - number of yellow cards this player got on a match or week
+    red_cards INT, - number of red cards this player got on a match or week
+    saves INT, - number of saves a player got for a match or week
+    starts INT, - whether or not a player started a match, 1 is yes they started 0 is they did not start or they were substituted in
+    influence DOUBLE, - the influence a player had on a certain game or week
+    creativity DOUBLE, - the creativity a player had on a certain game or week
+    threat DOUBLE, - the thread a player had on a certain game or week
+    ict_index DOUBLE, - the ict index a player had on a certain game or week
+    expected_goals DOUBLE, - the expected goals a player had on a certain game or week
+    expected_assists DOUBLE, - the expected assists a player had on a certain game or week
+    expected_goal_involvements DOUBLE, - the expected goal involvements a player had on a certain game or week
+    expected_goals_conceded DOUBLE, - the expected goals conceded a player had on a certain game or week
+    kickoff_time VARCHAR(50) - the kickoff time of the game for that week, gives in a string format which includes time and date
+
+
+
+TABLE player_future - this table shows all of the future fixtures or matches of a certain player. use this table if a question is asking about the future matches of a certain player. You do not need to filter by player name when using this table.
+    event INT PRIMARY KEY, - the gameweek in number form
+    event_name VARCHAR(50), - the gameweek in string form
+    team_h INT, - home team id
+    team_a INT, - away team id
+    team_h_name VARCHAR(50), - home team name
+    team_a_name VARCHAR(50), - away team name
+    is_home BOOLEAN, - is true if for this match this player's team is home, it is false if for this match this player's team is away
+    difficulty INT, - gives the difficulty rating of this particular future match
+    kickoff_time VARCHAR(50) - the kickoff time of the of the game for that week
+
+
+TABLE fixtures - this table has a list of all 380 matches that have happened or will happen over this premier league season. there are 10 matches every week and there are 38 gameweeks in a premier league season. Use this table if the question is asking about a certain match (past or future) and the question does not specify a specific player
+    game_id INT PRIMARY KEY, - unique id for each game
+    gw INT, - the gameweek, use this to filter between different gameweeks
+    finished BOOLEAN, - True if the game has already happened and False if the game has not yet happened
+    team_a INT, - away team id
+    team_h INT, - home team id
+    team_h_name VARCHAR(50), - home team name
+    team_h_score FLOAT, - home team score
+    team_a_name VARCHAR(50), - away team name
+    team_a_score FLOAT, - away team score
+    kickoff_time VARCHAR(50), - kickoff or start time of a match
+    team_h_difficulty INT, - difficulty level of the home team
+    team_a_difficulty INT, - difficulty level of the away team
+
+
+
+Here are the names of the teams in the database. When writing the SQL, use these names. If you use the short team name use the short_name column in the teams table. If you use the team name use the team_name column in the teams table.
+short_name | team_name
+ARS | Arsenal
+AVL | Aston Villa
+BOU | Bournemouth
+BRE | Brentford
+BHA | Brighton
+CHE | Chelsea
+CRY | Crystal Palace
+EVE | Everton
+FUL | Fulham
+IPS | Ipswich
+LEI | Leicester
+LIV | Liverpool
+MCI | Man City
+MUN | Man Utd
+NEW | Newcastle
+NFO | Nott'm Forest
+SOU | Southampton
+TOT | Spurs
+WHU | West Ham
+WOL | Wolves
+
+
+Here are some examples of english questions and their respective SQL queries as well as the reasoning behind it to help you better understand how to solve these questions:
+
+English Question: How many assists did Saka get so far this season?
+SQL Code: SELECT assists FROM players WHERE second_name = 'Saka';
+Reasoning: You would only return the assists column and you would use his second_name. Whenever there is only a single name, assume that the user is asking for their second name.
+
+English Question: How many goals has Virgil van Dijk scored?
+SQL Code: SELECT goals_scored FROM players WHERE first_name = 'Virgil' AND second_name = "van Dijk";
+Reasoning: You would only return the goals_scored column and you would use first_name and second_name. If there is a player with a full name, use the first and second name when filtering.
+
+English Question: Who are currently the best 5 players in the Premier League?
+SQL Code: SELECT second_name FROM players ORDER BY total_points DESC LIMIT 5;
+Reasoning: This is an ambiguous question to answer because it is hard to quantify who the best players are just from statistics. But we will use these metrics which give a good idea of who are the best players. We will use the total_points column from the players table since that has a list of all the players in the Premier League
+
+English Question: When was the last fixture for Man City?
+SQL Code: SELECT kickoff_time FROM fixtures WHERE (team_h_name = 'Man City' OR team_a_name = 'Man City') AND finished = True ORDER BY kickoff_time DESC LIMIT 1;
+Reasoning: You will return the kickoff_time because that was when the last game was played. This is retrieved from the fixtures table since it has all of the games of the entire season, played or not played yet. The reason you filter from both away and home teams is beacuse the last game a team played could have been at home or away. You filter finished = True because that means the game has already been played. Order the kickoff_time by descending to get the most recent matches first.
+
+English Question: Which players have the greatest difference between their expected assists per 90 and their actual assists per 90?
+SQL Code: SELECT second_name FROM players ORDER BY ABS(expected_assists_per_90 - assists_per_90) DESC LIMIT 5;
+Reasoning: The question is asking for players so you will return the second_name. This uses the players table to get the data. You use the ORDER BY DESC to sort the absolute value of (expected_assists_per_90 - assists_per_90) to get the largest difference between both columns and limit to the top 5 results since the question does not specify how many to limit it.
+
+English Question: Which players have better saves per 90 minutes than the average for their team?
+SQL Code: WITH team_avg_saves AS ( SELECT team_name, AVG(saves_per_90) AS avg_saves_per_90 FROM players GROUP BY team_name ) SELECT p.team_name, p.second_name, p.saves_per_90, t.avg_saves_per_90 FROM players p JOIN team_avg_saves t ON p.team_name = t.team_name WHERE p.saves_per_90 > t.avg_saves_per_90;
+Reasoning: There are two main parts to this question. Getting the saves per 90 minutes average of all the players grouped by team. Then comparing every player in the players table to that average based upon their team.
+
+IMPORTANT: If the question mentions a specific player, use first_name (if given in the question) and use second_name to filter out.
+IMPORTANT: If you get a question where you are using the tables player_history, player_past, and player_future. Do not filter out by player name or player id when using these tables. There is a separate API call that will do the filtering for you so do not add SQL code that will filter out by player name or player id.
+
+Convert the following english question into an SQL query:
