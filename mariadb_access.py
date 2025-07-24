@@ -1,249 +1,179 @@
-import mariadb
+# update_db_runtime.py
 import json
 from decimal import Decimal
 import sys
+import re
 import requests
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import Engine, Result
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
 
+# ---------- CONFIG ----------
+DB_HOST = os.getenv("DATABASE_HOST")
+DB_USER = os.getenv("DATABASE_USER")
+DB_PASS = os.getenv("DATABASE_PASSWORD")
+DB_NAME = os.getenv("DATABASE_NAME")
+DB_PORT = int(os.getenv("DATABASE_PORT", 3306))
 
-# Database connection configuration
-config = {
-    'host': os.getenv("DATABASE_HOST"),
-    'user': os.getenv("DATABASE_USER"),
-    'password': os.getenv("DATABASE_PASSWORD"),  # Replace with your actual password
-    'database': os.getenv("DATABASE_NAME")         # Replace with your actual database name
-}
+GEMINI_API_KEY = os.getenv("API_KEY")          # rename if needed
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
+# ---------- ENGINE ----------
+def get_engine() -> Engine:
+    # Public IP path; if you swap to Cloud SQL Proxy, change host/port to 127.0.0.1:3307
+    return create_engine(
+        f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
+        pool_pre_ping=True,
+        pool_recycle=300,
+        pool_size=1,
+        max_overflow=2,
+        connect_args={"connect_timeout": 10}
+    )
+
+engine = get_engine()
+
+# ---------- HELPERS ----------
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
             return float(obj)
-        return super(DecimalEncoder, self).default(obj)
+        return super().default(obj)
 
-def execute_query(cursor, query):
-    """Executes an SQL query and returns the extracted result."""
+def run_sql(sql: str) -> tuple[list[str], list[tuple]]:
+    """Run a read-only SQL and return (headers, rows)."""
+    with engine.connect() as conn:
+        result: Result = conn.execute(text(sql))
+        # Convert each row to a tuple for JSON serialization
+        rows = [tuple(row) for row in result.fetchall()]
+        headers = result.keys()
+    return list(headers), rows
+
+def run_sql_write(df: pd.DataFrame, table: str, mode: str = "replace"):
+    """Write a DataFrame to MySQL."""
+    df.to_sql(table, engine, if_exists=mode, index=False, method="multi", chunksize=1000)
+
+# ---------- PUBLIC FUNCTIONS ----------
+def execute_query(sql_query: str) -> str:
+    """Executes SQL and returns JSON {headers, rows}."""
     try:
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return result
-    except mariadb.Error as e:
+        headers, rows = run_sql(sql_query)
+        return json.dumps({"headers": headers, "rows": rows}, cls=DecimalEncoder)
+    except Exception as e:
         print(f"SQL Execution Error: {e}")
-        return None
-
-def return_query(sql_query):
-    try:
-        conn = mariadb.connect(
-            user=config['user'],
-            password=config['password'],
-            host=config['host'],
-            port=3307,
-            database=config['database']
-        )
-        #print("Connected to MariaDB Platform!")
-        cur = conn.cursor()
-
-        gt_result = execute_query(cur, sql_query)
-
-        #print(gt_result)
-
-        #rows = cur.fetchall()
-        rows = gt_result
-        columns = [desc[0] for desc in cur.description]
-
-        # Format the results as JSON
-        result = {
-            "headers": columns,
-            "rows": rows
-        }
-
-        # Close connection
-        cur.close()
-        conn.close()
-
-        # Use the custom encoder for JSON serialization
-        return json.dumps(result, cls=DecimalEncoder)
-
-    except mariadb.Error as e:
-        print(f"Error connecting to MariaDB Platform: {e}")
         return json.dumps({"error": str(e)})
 
-def get_player_id_from_question(natural_language_question):
+def return_query(sql_query: str) -> str:
+    """Backward-compatible wrapper."""
+    return execute_query(sql_query)
+
+def get_player_id_from_question(natural_language_question: str) -> int:
     """
-    Extracts player ID from a natural language question by:
-    1. Getting all player names from the database
-    2. Using Gemini API to match the question with the correct player
-    3. Returns the player_id or 0 if no match found
+    1. Pull player names/ids from DB
+    2. Ask Gemini which row matches the question
+    3. Return player_id (int) or 0
     """
     try:
-        # Step 1: Get all player names from database
-        conn = mariadb.connect(
-            user=config['user'],
-            password=config['password'],  
-            host=config['host'],
-            port=3307,
-            database=config['database']
-        )
-        cur = conn.cursor()
-        
-        # Query to get all player names and IDs
-        player_query = """
-        SELECT web_name, first_name, second_name, player_id 
-        FROM players
-        """
-        players_data = execute_query(cur, player_query)
-        columns = [desc[0] for desc in cur.description]
-        
-        # Format the data for Gemini API
-        players_table = {
-            "headers": columns,
-            "rows": players_data
-        }
-        
-        # Step 2: Create prompt for Gemini API
-        prompt = f"""
-        Scan the following table and question and return only the corresponding player_id, no other text. 
-        If you cannot find a match then return 0.
-        
-        Question: {natural_language_question}
-        
-        Players Table:
-        {json.dumps(players_table, cls=DecimalEncoder)}
+        headers, rows = run_sql("SELECT web_name, first_name, second_name, player_id FROM players")
+        players_table = {"headers": headers, "rows": rows}
 
-        Remember to only return the player_id, no other text.
-        """
-        
-        # Step 3: Get player_id from Gemini API
-        genai.configure(api_key=os.getenv("API_KEY"))
-        model = genai.GenerativeModel("gemini-2.0-flash")
-    
+        prompt = f"""
+Scan the following table and the question. Return ONLY the matching player_id (integer). 
+If no match, return 0. No extra text.
+
+Question: {natural_language_question}
+
+Players Table (JSON):
+{json.dumps(players_table, cls=DecimalEncoder)}
+"""
+        genai.configure(api_key=GEMINI_API_KEY)
+        model = genai.GenerativeModel(GEMINI_MODEL)
         response = model.generate_content(prompt)
-        
-        # Extract numeric value from response
-        try:
-            # Try to find a number in the response
-            import re
-            numbers = re.findall(r'\d+', response.text)
-            if numbers:
-                player_id = int(numbers[0])  # Take the first number found
-            else:
-                player_id = 0
-        except (ValueError, IndexError):
-            player_id = 0
-        
-        # Close connection
-        cur.close()
-        conn.close()
-        
-        return player_id
-        
+
+        numbers = re.findall(r"\d+", response.text or "")
+        return int(numbers[0]) if numbers else 0
+
     except Exception as e:
         print(f"Error in get_player_id_from_question: {e}")
         return 0
 
-def update_player_data(player_id):
+def update_player_data(player_id: int) -> bool:
     """
-    Updates player data in the database by:
-    1. Fetching data from FPL API
-    2. Processing and cleaning the data
-    3. Updating the database tables
+    Pull fresh data for a player from FPL and update tables.
+    Returns True on success, False otherwise.
     """
     if player_id == 0:
-        return None
+        return False
     try:
-        # Step 1: Fetch data from FPL API
-        response = requests.get(f'https://fantasy.premierleague.com/api/element-summary/{player_id}/')
-        
-        if response.status_code != 200:
-            print(f"Failed to retrieve data from API. Status code: {response.status_code}")
+        # --- Fetch player-specific data ---
+        r = requests.get(f"https://fantasy.premierleague.com/api/element-summary/{player_id}/")
+        if r.status_code != 200:
+            print(f"FPL API error (player): {r.status_code}")
             return False
-            
-        data = response.json()
-        
-        # Step 2: Create DataFrames
-        df_player_history = pd.DataFrame(data['history_past'])
-        df_player_past = pd.DataFrame(data['history'])
-        df_player_future = pd.DataFrame(data['fixtures'])
-        
-        # Get teams data for mapping
-        teams_response = requests.get('https://fantasy.premierleague.com/api/bootstrap-static/')
-        if teams_response.status_code == 200:
-            teams_data = teams_response.json()
-            df_teams = pd.DataFrame(teams_data['teams'])
-        else:
-            print("Failed to retrieve teams data")
+        pdata = r.json()
+
+        df_player_history = pd.DataFrame(pdata["history_past"])
+        df_player_past = pd.DataFrame(pdata["history"])
+        df_player_future = pd.DataFrame(pdata["fixtures"])  # currently unused
+
+        # --- Teams lookup ---
+        teams_resp = requests.get("https://fantasy.premierleague.com/api/bootstrap-static/")
+        if teams_resp.status_code != 200:
+            print("FPL teams API error")
             return False
-        
-        df_teams = df_teams.rename(columns={'id': 'team_id', 'name': 'team_name'})
-        df_teams = df_teams[['team_id', 'team_name', 'short_name', 'position', 'played', 'win', 'draw', 'loss', 'points', 'strength']]
-        # Step 3: Process player history data
+        df_teams = pd.DataFrame(teams_resp.json()["teams"])
+        df_teams = df_teams.rename(columns={"id": "team_id", "name": "team_name"})
+        df_teams = df_teams[['team_id', 'team_name', 'short_name', 'position', 'played',
+                             'win', 'draw', 'loss', 'points', 'strength']]
+
+        # --- Clean & cast history data ---
         df_player_history = df_player_history[['season_name', 'total_points',
            'minutes', 'goals_scored', 'assists', 'clean_sheets', 'goals_conceded',
            'own_goals', 'penalties_saved', 'penalties_missed', 'yellow_cards',
            'red_cards', 'saves', 'starts', 'influence', 'creativity', 'threat', 
            'ict_index', 'expected_goals', 'expected_assists',
            'expected_goal_involvements', 'expected_goals_conceded']]
-        
-        # Convert numeric columns to float
-        columns_to_floats = ['influence', 'creativity', 'threat', 'ict_index', 
-                           'expected_goals', 'expected_assists', 
-                           'expected_goal_involvements', 'expected_goals_conceded']
-        df_player_history[columns_to_floats] = df_player_history[columns_to_floats].astype(float)
-        
-        # Step 4: Process player past data
+
+        float_cols = ['influence', 'creativity', 'threat', 'ict_index', 
+                      'expected_goals', 'expected_assists', 
+                      'expected_goal_involvements', 'expected_goals_conceded']
+        df_player_history[float_cols] = df_player_history[float_cols].astype(float)
+
+        # --- Past GW data ---
         df_player_past = df_player_past.rename(columns={'round': 'event', 'element': 'player_id'})
         df_player_past['opponent_team_name'] = df_player_past['opponent_team'].map(
             df_teams.set_index('team_id')['team_name']
         )
-        
-        df_player_past = df_player_past[['player_id', 'event', 'was_home', 'opponent_team', 
-                                        'opponent_team_name', 'team_h_score', 'team_a_score', 
-                                        'minutes', 'goals_scored', 'assists', 'clean_sheets', 
-                                        'goals_conceded', 'own_goals', 'penalties_saved', 
-                                        'penalties_missed', 'yellow_cards', 'red_cards', 'saves', 
-                                        'starts', 'influence', 'creativity', 'threat', 'ict_index', 
-                                        'expected_goals', 'expected_assists', 
-                                        'expected_goal_involvements', 'expected_goals_conceded', 
+        df_player_past = df_player_past[['player_id', 'event', 'was_home', 'opponent_team',
+                                        'opponent_team_name', 'team_h_score', 'team_a_score',
+                                        'minutes', 'goals_scored', 'assists', 'clean_sheets',
+                                        'goals_conceded', 'own_goals', 'penalties_saved',
+                                        'penalties_missed', 'yellow_cards', 'red_cards', 'saves',
+                                        'starts', 'influence', 'creativity', 'threat', 'ict_index',
+                                        'expected_goals', 'expected_assists',
+                                        'expected_goal_involvements', 'expected_goals_conceded',
                                         'kickoff_time']]
-        
-        df_player_past[columns_to_floats] = df_player_past[columns_to_floats].astype(float)
-        
-        # Step 5: Process player future data
-        # df_player_future['team_h_name'] = df_player_future['team_h'].map(
-        #     df_teams.set_index('team_id')['team_name']
-        # )
-        # df_player_future['team_a_name'] = df_player_future['team_a'].map(
-        #     df_teams.set_index('team_id')['team_name']
-        # )
-        
-        # df_player_future = df_player_future[['event', 'event_name', 'team_h', 'team_a', 
-        #                                    'team_h_name', 'team_a_name', 'is_home', 
-        #                                    'difficulty', 'kickoff_time']]
-        
-        # Step 6: Update database
-        engine = create_engine('mysql+pymysql://{user}:{password}@{host}:{port}/{database}'.format(
-            user=os.getenv("DATABASE_USER"),
-            password=os.getenv("DATABASE_PASSWORD"),
-            host=os.getenv("DATABASE_HOST"),
-            port=os.getenv("DATABASE_PORT"),
-            database=os.getenv("DATABASE_NAME")
-        )   )
-        
-        df_player_history.to_sql('player_history', engine, if_exists='replace', index=False)
-        df_player_past.to_sql('player_past', engine, if_exists='replace', index=False)
-        #df_player_future.to_sql('player_future', engine, if_exists='replace', index=False)
-        
+        df_player_past[float_cols] = df_player_past[float_cols].astype(float)
+
+        # --- Write back ---
+        run_sql_write(df_player_history, "player_history", mode="replace")
+        run_sql_write(df_player_past, "player_past", mode="replace")
+        # run_sql_write(df_player_future, "player_future", mode="replace")  # if needed later
+
         return True
-        
     except Exception as e:
         print(f"Error in update_player_data: {e}")
         return False
 
+# ---------- CLI ----------
 if __name__ == "__main__":
-    # Read the SQL query from the command-line arguments
-    sql_query = sys.argv[1]
+    if len(sys.argv) < 2:
+        print("Usage: python update_db_runtime.py \"SELECT * FROM players LIMIT 5\"")
+        sys.exit(1)
+
+    sql_query = " ".join(sys.argv[1:])
     print(return_query(sql_query))
