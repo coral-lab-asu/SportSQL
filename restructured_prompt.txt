@@ -1,0 +1,131 @@
+
+### Restructured Prompt for Premier League Analytics System:
+
+**1. Reasoning Phase:**  
+Before generating sub-questions, reason over the user’s question. Analyze the following:
+- **Entities detected** (players/teams): Are the entities detected (e.g., players like "Erling Haaland") involved in a comparison, or are they being analyzed independently?
+- **Timeframe**: Is the question about the current season, recent seasons, or a broader timeframe? If no timeframe is specified, default to the last N seasons based on the system’s settings.
+- **Details required**: Is the question asking for a **broad overview** (e.g., goals in the current season) or a **deep comparison** (e.g., comparing players’ stats over multiple seasons)? Break down the question accordingly into a manageable set of sub-questions.
+
+**2. Plan Phase:**  
+Generate a set of high-level sub-questions:
+- Ensure sub-questions are concise, focused, and match the level of detail required.
+- If the question is a comparison between multiple players or teams, ask comparative sub-questions (e.g., "how do X and Y compare in terms of goals?").
+- Consider whether the user is asking for statistics over multiple seasons, player history, or just current-season data.
+- Ensure that the most critical insights are addressed first, and prioritize by the order of relevance and importance.
+
+**Example Workflow:**
+
+**Input Example:**
+
+```json
+{
+  "user_question": "Compare Erling Haaland and Mohamed Salah over recent seasons for goals and assists.",
+  "schema_summary": "...",
+  "entities": { "players": ["Erling Haaland", "Mohamed Salah"] },
+  "constraints": { "max_subqueries": 10, "seasons_policy": {"type":"last_n","n":10}, "allow_multi_entity": true },
+  "server_type": "remote"
+}
+```
+
+**Reasoning:**
+
+- The question is asking for a **comparative analysis** between **two players**, focusing on **goals and assists** over **recent seasons**.
+- Since no specific timeframe is provided, the default is the **last N seasons**.
+- A **side-by-side comparison** is needed, so sub-questions should focus on comparing their per-season totals, per-90 stats, and other key metrics.
+- We need to explore **multiple angles** of comparison, such as season-level breakdowns and per-90 comparisons for the players.
+
+**Plan:**
+
+```json
+{
+  "intent": "player_comparison",
+  "entities": {
+    "players": ["Erling Haaland", "Mohamed Salah"],
+    "timeframe": { "type": "last_n", "n": 10 }
+  },
+  "questions": [
+    {
+      "id": "s1",
+      "question": "For Haaland and Salah, what are per-season totals for goals and assists over the last 10 seasons?",
+      "table_hint": "player_history",
+      "priority": 1
+    },
+    {
+      "id": "s2",
+      "question": "For Haaland and Salah, what are per-season minutes over the last 10 seasons?",
+      "table_hint": "player_history",
+      "priority": 2
+    },
+    {
+      "id": "s3",
+      "question": "For Haaland and Salah, what are their goals per 90 and assists per 90 over the last 10 seasons?",
+      "table_hint": "player_history",
+      "priority": 3
+    },
+    {
+      "id": "s4",
+      "question": "For Haaland and Salah, what are their expected goals, expected assists, and expected goal involvements this season?",
+      "table_hint": "players",
+      "priority": 4
+    },
+    {
+      "id": "s5",
+      "question": "How do Haaland and Salah's goals_per_90 compare to expected_goals_per_90 and assists_per_90 to expected_assists_per_90 this season?",
+      "table_hint": "players",
+      "priority": 5
+    },
+    {
+      "id": "s6",
+      "question": "In matches this season, how many wins did each player’s team record while they featured?",
+      "table_hint": "player_past",
+      "priority": 6
+    },
+    {
+      "id": "s7",
+      "question": "In how many matches this season did each player score at least once, and how many total goals came in those matches?",
+      "table_hint": "player_past",
+      "priority": 7
+    },
+    {
+      "id": "s8",
+      "question": "Over the last 5 gameweeks, what is the trend for each player’s goals_scored and assists?",
+      "table_hint": "player_past",
+      "priority": 8
+    },
+    {
+      "id": "s9",
+      "question": "What are Haaland and Salah's ICT indices, influences, creativity, and threat this season?",
+      "table_hint": "players",
+      "priority": 9
+    },
+    {
+      "id": "s10",
+      "question": "Are there any penalties missed or disciplinary factors (yellow cards, red cards) impacting availability this season for Haaland or Salah?",
+      "table_hint": "players",
+      "priority": 10
+    }
+  ],
+  "max_items": 10
+}
+```
+
+### Key Features of the Rewritten Prompt:
+1. **Reasoning Step First:**  
+   Before generating sub-questions, we perform a reasoning phase to analyze the level of detail required for the question. This ensures that we generate a more accurate set of sub-questions that are aligned with the user's needs.
+
+2. **Clear and Concise Sub-Questions:**  
+   The questions are well-structured to target specific statistics, focusing on what’s most relevant and following a logical flow based on the user’s original query.
+
+3. **Timeframe Consideration:**  
+   When no timeframe is specified, the system defaults to analyzing the last N seasons. If a user asks for a single-season comparison, the prompt adjusts accordingly.
+
+4. **Comparison Handling:**  
+   For multi-player/team questions, comparative sub-questions are prioritized, ensuring insights are side-by-side.
+
+5. **Context-Appropriate Tables:**  
+   The plan includes suggestions for the appropriate tables (e.g., `player_history`, `player_past`, `players`) based on the type of analysis requested.
+
+---
+
+This rewritten prompt offers a more reasoned and structured approach to generating the query plans, resulting in more relevant and detailed insights for the user.

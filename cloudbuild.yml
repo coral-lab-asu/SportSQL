@@ -1,0 +1,43 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "us-docker.pkg.dev/$PROJECT_ID/containers/flask:$SHORT_SHA",
+        ".",
+      ]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "us-docker.pkg.dev/$PROJECT_ID/containers/flask:$SHORT_SHA"]
+
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - flask-app
+      - "--image=us-docker.pkg.dev/$PROJECT_ID/containers/flask:$SHORT_SHA"
+      - "--region=$_REGION"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--memory=512Mi"
+      - >-
+        --set-env-vars=INSTANCE_CONNECTION_NAME=gemini-tables:us-west2:sport-sql-postgresql,
+        DATABASE_HOST=34.94.35.2,
+        DATABASE_USER=naman,
+        DATABASE_NAME=sport-sql,
+        DATABASE_PORT=5432,
+        GEMINI_MODEL=gemini-2.5-flash,
+        GPT_MODEL=gpt-4o,
+        FORCE_REMOTE_DB=true
+      - "--set-secrets=API_KEY=GEMINI_API_KEY:latest,DATABASE_PASSWORD=SPORTSQL_PASS:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest"
+
+images:
+  - "us-docker.pkg.dev/$PROJECT_ID/containers/flask:$SHORT_SHA"
+
+substitutions:
+  _REGION: us-west2
+options:
+  substitution_option: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY

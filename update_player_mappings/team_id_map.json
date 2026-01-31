@@ -1,0 +1,82 @@
+{
+  "1": {
+    "team_name": "Arsenal",
+    "short_name": "ARS"
+  },
+  "2": {
+    "team_name": "Aston Villa",
+    "short_name": "AVL"
+  },
+  "3": {
+    "team_name": "Burnley",
+    "short_name": "BUR"
+  },
+  "4": {
+    "team_name": "Bournemouth",
+    "short_name": "BOU"
+  },
+  "5": {
+    "team_name": "Brentford",
+    "short_name": "BRE"
+  },
+  "6": {
+    "team_name": "Brighton",
+    "short_name": "BHA"
+  },
+  "7": {
+    "team_name": "Chelsea",
+    "short_name": "CHE"
+  },
+  "8": {
+    "team_name": "Crystal Palace",
+    "short_name": "CRY"
+  },
+  "9": {
+    "team_name": "Everton",
+    "short_name": "EVE"
+  },
+  "10": {
+    "team_name": "Fulham",
+    "short_name": "FUL"
+  },
+  "11": {
+    "team_name": "Leeds",
+    "short_name": "LEE"
+  },
+  "12": {
+    "team_name": "Liverpool",
+    "short_name": "LIV"
+  },
+  "13": {
+    "team_name": "Man City",
+    "short_name": "MCI"
+  },
+  "14": {
+    "team_name": "Man Utd",
+    "short_name": "MUN"
+  },
+  "15": {
+    "team_name": "Newcastle",
+    "short_name": "NEW"
+  },
+  "16": {
+    "team_name": "Nott'm Forest",
+    "short_name": "NFO"
+  },
+  "17": {
+    "team_name": "Sunderland",
+    "short_name": "SUN"
+  },
+  "18": {
+    "team_name": "Spurs",
+    "short_name": "TOT"
+  },
+  "19": {
+    "team_name": "West Ham",
+    "short_name": "WHU"
+  },
+  "20": {
+    "team_name": "Wolves",
+    "short_name": "WOL"
+  }
+}

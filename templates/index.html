@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Natural Language to SQL Query & Visualization</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/" class="nav-brand">SportSQL Soccer</a>
+        <div class="nav-links">
+          <a href="/about">About</a>
+          <a href="/dataset">Dataset</a>
+          <a href="/paper">Paper</a>
+          <a href="/gallery">Gallery</a>
+          <a href="https://github.com/McHarold404/SportSQL" target="_blank"
+            >GitHub</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      <h1>Natural Language to SQL Query & Visualization</h1>
+      <p class="subtitle">
+        Ask questions about Premier League soccer data in plain English
+      </p>
+
+      <div class="query-form">
+        <textarea
+          id="query-input"
+          placeholder="Enter your question here..."
+        ></textarea>
+        <div class="form-controls">
+          <div
+            class="toggle-container"
+            style="
+              margin-right: 16px;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+            "
+          >
+            <span class="toggle-label" style="font-weight: 600">Mode:</span>
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                cursor: pointer;
+              "
+            >
+              <input
+                type="radio"
+                name="mode"
+                id="mode-direct"
+                value="direct"
+                checked
+              />
+              <span>Direct</span>
+            </label>
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                cursor: pointer;
+              "
+            >
+              <input type="radio" name="mode" id="mode-deep" value="deep" />
+              <span>Deep analysis</span>
+            </label>
+          </div>
+          <div class="toggle-container">
+            <label class="toggle-switch">
+              <input type="checkbox" id="visualization-toggle" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Generate Visualization</span>
+          </div>
+          <button id="submit-query">Submit Query</button>
+        </div>
+      </div>
+
+      <div class="results-container">
+        <div class="loading" id="loading" style="display: none">
+          <div class="spinner"></div>
+          <p>Processing your query...</p>
+        </div>
+
+        <div class="error" id="error" style="display: none"></div>
+
+        <div class="results" id="results">
+          <div class="sql-display" id="sql-display"></div>
+          <div class="data-display" id="data-display"></div>
+          <div class="visualization" id="visualization"></div>
+        </div>
+      </div>
+
+      <div class="banner">
+        <button id="update-db-btn" class="submit-btn">Update Database</button>
+      </div>
+
+      <div id="update-db-message" style="margin-top: 10px"></div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+      document
+        .getElementById("update-db-btn")
+        .addEventListener("click", function () {
+          const btn = this;
+          btn.disabled = true;
+          btn.textContent = "Updating...";
+          fetch("/update-db", { method: "POST" })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("update-db-message").textContent =
+                data.message;
+            })
+            .catch((err) => {
+              document.getElementById("update-db-message").textContent =
+                "Error updating database.";
+            })
+            .finally(() => {
+              btn.disabled = false;
+              btn.textContent = "Update Database";
+            });
+        });
+    </script>
+
+    <style>
+      .submit-btn,
+      #update-db-btn {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 24px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 10px;
+      }
+
+      .submit-btn:hover,
+      #update-db-btn:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </body>
+</html>

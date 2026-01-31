@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset - Natural Language to SQL Query Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">NL2SQL Soccer</a>
+            <div class="nav-links">
+                <a href="/about">About</a>
+                <a href="/dataset">Dataset</a>
+                <a href="/paper">Paper</a>
+                <a href="https://github.com/McHarold404/SportSQL" target="_blank">GitHub</a>
+                <a href="/gallery">Visualizations Gallery</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>Dataset Information</h1>
+
+        <section class="content-section">
+            <h2>Data Source</h2>
+            <p>
+                The data used in this project comes from the Fantasy Premier League (FPL) API,
+                which provides comprehensive statistics about players, teams, and matches in
+                the English Premier League.
+            </p>
+        </section>
+
+        <section class="content-section">
+            <h2>Database Schema</h2>
+
+            <h3>Players Table</h3>
+            <p>Contains current season statistics for all Premier League players:</p>
+            <ul>
+                <li>Basic Information: player_id, first_name, second_name, web_name, position</li>
+                <li>Team Information: team_id, team_name</li>
+                <li>Performance Metrics: goals_scored, assists, clean_sheets, etc.</li>
+                <li>Advanced Statistics: expected_goals, expected_assists, ict_index, etc.</li>
+            </ul>
+
+            <h3>Teams Table</h3>
+            <p>Contains information about Premier League teams:</p>
+            <ul>
+                <li>Basic Information: team_id, team_name, short_name</li>
+                <li>Performance Metrics: position, played, win, draw, loss, points</li>
+                <li>Team Strength: strength rating</li>
+            </ul>
+
+            <h3>Player History Table</h3>
+            <p>Contains historical statistics for players across previous seasons:</p>
+            <ul>
+                <li>Season Information: season_name</li>
+                <li>Performance Metrics: total_points, minutes, goals_scored, etc.</li>
+                <li>Advanced Statistics: influence, creativity, threat, etc.</li>
+            </ul>
+
+            <h3>Player Past Table</h3>
+            <p>Contains match-by-match statistics for the current season:</p>
+            <ul>
+                <li>Match Information: event, was_home, opponent_team</li>
+                <li>Performance Metrics: minutes, goals_scored, assists, etc.</li>
+                <li>Advanced Statistics: expected_goals, expected_assists, etc.</li>
+            </ul>
+
+            <h3>Fixtures Table</h3>
+            <p>Contains information about all matches in the current season:</p>
+            <ul>
+                <li>Match Information: game_id, gw, finished</li>
+                <li>Team Information: team_h, team_a, team_h_name, team_a_name</li>
+                <li>Match Results: team_h_score, team_a_score</li>
+                <li>Additional Information: kickoff_time, difficulty ratings</li>
+            </ul>
+        </section>
+
+        <section class="content-section">
+            <h2>Data Update Process</h2>
+            <p>
+                You can update the database with the latest Premier League data by clicking the Update Database button,
+                which fetches the latest data from the Fantasy Premier League API
+                and updates the MariaDB database.
+            </p>
+        </section>
+    </main>
+</body>
+
+</html>

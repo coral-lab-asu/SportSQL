@@ -1,0 +1,23 @@
+name: sportsql
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - flask
+      - google-generativeai
+      - requests
+      - pandas
+      - sqlalchemy
+      - unidecode
+      - numpy
+      - matplotlib
+      - beautifulsoup4
+      - lxml
+      - psycopg2-binary
+      - python-dotenv
+      - gunicorn
+      - cloud-sql-python-connector
+      - argparse
