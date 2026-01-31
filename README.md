@@ -1,344 +1,315 @@
-# SportSQL - Natural Language to SQL Query Converter for Premier League Data
+# SportSQL: Interactive System for Real-Time Sports Reasoning and Visualization
 
-A powerful web application that converts natural language questions about Premier League soccer data into SQL queries using Google's Gemini AI model. Features dual database support for cost-effective local development and production deployment.
+[![Paper](https://img.shields.io/badge/Paper-ACL%20Anthology-blue)](https://aclanthology.org/2025.ijcnlp-demo.11/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-blue)](https://www.postgresql.org/)
 
-## ✨ Features
+> **A modular, interactive system for natural language querying and visualization of dynamic sports data, with a focus on the English Premier League (EPL).**
 
-- **Natural Language Processing**: Convert plain English questions to SQL queries
-- **Dual Database Support**: PostgreSQL for local development, MySQL for production
-- **Real-time Querying**: Instant database queries with live results
-- **Automatic Visualization**: Generate charts and graphs from query results
-- **Comprehensive Statistics**: Access to complete Premier League data
-- **Cost-Effective Development**: Free local database for development
-- **Production Ready**: Optimized for GCP Cloud Run deployment
+SportSQL translates user questions into executable SQL over a live, temporally indexed database constructed from real-time Fantasy Premier League (FPL) data. It supports both tabular and visual outputs, leveraging symbolic reasoning capabilities of Large Language Models (LLMs) for query parsing, schema linking, and visualization selection.
 
-## 🏗️ Architecture
+📄 **Paper**: [SPORTSQL: An Interactive System for Real-Time Sports Reasoning and Visualization](https://aclanthology.org/2025.ijcnlp-demo.11/)  
+🌐 **Demo**: [https://github.com/coral-lab-asu/SportSQL](https://github.com/coral-lab-asu/SportSQL)
 
-| Environment           | Database          | Cost        | Use Case               |
-| --------------------- | ----------------- | ----------- | ---------------------- |
-| **Local Development** | PostgreSQL        | Free        | Development, Testing   |
-| **Production/GCP**    | MySQL (Cloud SQL) | Pay-per-use | Production, Deployment |
+---
 
-## 📋 Prerequisites
+## 🎯 Key Features
 
-- **Python 3.10+ < 3.12 **
-- **Conda** (recommended) or Python venv
-- **PostgreSQL** (for local development)
-- **Google Gemini API key**
-- **Git**
+### 🔍 **Three Query Modes**
+
+1. **Single-Query NL2SQL** - Direct translation of natural language to SQL
+   - Fast, single-shot query execution
+   - Ideal for simple questions about current season stats
+   - Example: *"How many goals has Erling Haaland scored?"*
+
+2. **Deep Research Mode** - Multi-query comprehensive analysis
+   - Automatic query decomposition into sub-questions
+   - Historical data analysis across multiple seasons
+   - Player comparison and trend analysis
+   - Example: *"Compare Haaland and Salah's offensive performance over the last 3 seasons"*
+
+3. **Interactive Visualization** - Automatic chart generation
+   - LLM-powered visualization selection
+   - Dynamic chart generation from query results
+   - Pre-built gallery of common visualizations
+
+### 🏗️ **System Architecture**
+
+- **Real-time Data**: Live updates from Fantasy Premier League API
+- **Temporal Indexing**: Historical data across multiple seasons
+- **LLM Integration**: Support for both Gemini and OpenAI models
+- **PostgreSQL Backend**: Efficient query execution and data storage
+- **Modular Design**: Clean separation of concerns for easy extension
+
+---
+
+## 📊 DSQABENCH: Dynamic Sport Question Answering Benchmark
+
+To evaluate system performance, we introduce **DSQABENCH**, comprising:
+- **1,700+ queries** with SQL programs and gold answers
+- **Database snapshots** for reproducible evaluation
+- **Diverse query types**: Simple lookups, aggregations, comparisons, temporal queries
+- **Real-world complexity**: Handles ambiguous player names, team aliases, and temporal context
+
+---
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### Prerequisites
+
+- Python 3.10+ (< 3.12)
+- PostgreSQL 15+
+- Conda (recommended) or Python venv
+- Gemini API key (or OpenAI API key)
+
+### Installation
 
 ```bash
-git clone https://github.com/yourusername/SportSQL.git
+# Clone the repository
+git clone https://github.com/coral-lab-asu/SportSQL.git
 cd SportSQL
-```
 
-### 2. Set Up Conda Environment (Recommended)
-
-#### Option A: Using environment.yml (Easiest)
-
-```bash
-# Create environment from file (includes all dependencies)
-conda env create -f environment.yml
-
-# Activate environment
-conda activate sportsql
-```
-
-#### Option B: Manual setup
-
-```bash
 # Create conda environment
-conda create -n sportsql python=3.11
-
-# Activate environment
+conda env create -f environment.yml
 conda activate sportsql
 
-# Install dependencies
+# Or use pip
 pip install -r requirements.txt
-```
 
-### 3. Install PostgreSQL (Local Development)
-
-#### macOS (using Homebrew)
-
-```bash
+# Set up PostgreSQL (macOS)
 brew install postgresql@15
 brew services start postgresql@15
-echo 'export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your database credentials and API keys
 ```
 
-#### Ubuntu/Debian
+### Database Setup
 
 ```bash
-sudo apt update
-sudo apt install postgresql postgresql-contrib
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
+# Initialize local database with FPL data
+python src/database/setup_local_db.py
 ```
 
-#### Windows
-
-Download and install from [PostgreSQL official website](https://www.postgresql.org/download/windows/)
-
-### 4. Configure Environment Variables
-
-Create a `.env` file in the project root:
+### Run the Web Interface
 
 ```bash
-# Local PostgreSQL Configuration (for development)
-LOCAL_DATABASE_HOST=localhost
-LOCAL_DATABASE_PORT=5432
-LOCAL_DATABASE_USER=your_username
-LOCAL_DATABASE_PASSWORD=
-LOCAL_DATABASE_NAME=postgres
-
-# Remote MySQL Configuration (for production)
-DATABASE_HOST=your_gcp_host
-DATABASE_USER=your_gcp_user
-DATABASE_NAME=your_gcp_database
-DATABASE_PORT=3306
-DATABASE_PASSWORD=your_gcp_password
-
-# Google Gemini API
-API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.0-flash
-```
-
-### 5. Set Up Local Database
-
-```bash
-# Run the automated setup script
-python setup_local_db.py
-
-# This will:
-# - Create all necessary tables
-# - Populate with fresh Premier League data
-# - Set up the complete database schema
-```
-
-## 🎯 Usage
-
-### Local Development (Recommended)
-
-```bash
-# Activate conda environment
-conda activate sportsql
-
-# Start with local PostgreSQL database
-python app.py --server local
+# Start the Flask application
+cd website
+python app.py --server local --port 5000
 
 # Open browser to http://localhost:5000
 ```
 
-### Production Testing
+---
 
-```bash
-# Test with remote MySQL database
-python app.py --server remote
+## 💬 Example Queries
+
+### Simple Queries
+```
+"Who are the top 5 goal scorers this season?"
+"How many assists does Saka have?"
+"Which team has the most clean sheets?"
 ```
 
-### Environment Management with Conda
-
-```bash
-# Create environment with specific Python version
-conda create -n sportsql python=3.11
-
-# Activate environment
-conda activate sportsql
-
-# Install additional packages if needed
-conda install pandas numpy matplotlib
-
-# Deactivate when done
-conda deactivate
-
-# Remove environment if needed
-conda env remove -n sportsql
+### Deep Research Queries
 ```
+"Compare Erling Haaland and Mohamed Salah's offensive performance over the last 3 seasons"
+"Analyze Liverpool's defensive statistics and trends this season"
+"Show me players who consistently outperform their expected goals"
+```
+
+### Visualization Queries
+```
+"Show me a chart of top scorers"
+"Visualize the relationship between expected goals and actual goals for Haaland"
+"Plot team standings by strength"
+```
+
+---
 
 ## 📁 Project Structure
 
 ```
 SportSQL/
-├── app.py                  # Main Flask application (updated)
-├── db_config.py           # Database configuration manager (new)
-├── setup_local_db.py      # Local database setup script (new)
-├── mariadb_access.py      # Database access layer (updated)
-├── gemini_api.py          # Gemini API integration (updated)
-├── update_db.py           # Database update script (updated)
-├── requirements.txt       # Python dependencies (updated)
-├── Dockerfile             # Docker configuration (updated)
-├── cloudbuild.yml         # GCP deployment config (updated)
-├── LOCAL_SETUP.md         # Detailed local setup guide
-├── .env                   # Environment variables (create this)
-├── data/                  # CSV data files
-├── static/                # Web assets (CSS, JS, images)
-├── templates/             # HTML templates
-└── prompts/               # AI prompt templates
+├── src/                          # Core source code
+│   ├── database/                 # Database layer (PostgreSQL)
+│   ├── llm/                      # LLM integration (Gemini/OpenAI)
+│   ├── nl2sql/                   # Single-query NL2SQL
+│   ├── deep_research/            # Deep research mode
+│   └── visualization/            # Chart generation
+│
+├── website/                      # Web interface
+│   ├── app.py                    # Flask application
+│   ├── static/                   # CSS, JS, images
+│   └── templates/                # HTML templates
+│
+├── data/                         # Dataset (CSV files)
+├── docs/                         # Documentation
+├── scripts/                      # Utility scripts
+├── benchmarking/                 # Evaluation scripts & results
+└── update_player_mappings/       # Ground truth tools
 ```
 
-## 💬 Example Queries
+See [STRUCTURE.md](STRUCTURE.md) for detailed documentation.
 
-Try these natural language questions:
+---
 
-- **Player Stats**: "Who are the top 5 goal scorers this season?"
-- **Team Performance**: "Which team has the most clean sheets?"
-- **Specific Queries**: "Show me players with more than 5 assists"
-- **Analytics**: "What is the average goals per game for each team?"
-- **Comparisons**: "Compare Liverpool and Manchester City's performance"
-- **Advanced**: "Show me players who have more expected goals than actual goals"
+## 🔧 Configuration
 
-## 🛠️ Advanced Configuration
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```bash
+# PostgreSQL Configuration
+LOCAL_DATABASE_HOST=localhost
+LOCAL_DATABASE_PORT=5432
+LOCAL_DATABASE_USER=your_username
+LOCAL_DATABASE_PASSWORD=your_password
+LOCAL_DATABASE_NAME=postgres
+
+# LLM Configuration (choose one or both)
+# Gemini (default)
+API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-2.0-flash
+
+# OpenAI (optional)
+OPENAI_API_KEY=your_openai_api_key
+GPT_MODEL=gpt-4o
+```
+
+### LLM Provider Selection
+
+```bash
+# Use Gemini (default)
+python website/app.py --server local
+
+# Use OpenAI
+python website/app.py --server local --llm openai
+```
+
+See [docs/LLM_USAGE.md](docs/LLM_USAGE.md) for detailed LLM configuration.
+
+---
+
+## 🧪 Evaluation
+
+Run the evaluation pipeline on DSQABENCH:
+
+```bash
+# Evaluate the full pipeline
+python scripts/evaluate_pipeline.py
+
+# Test specific components
+python scripts/test_evaluation.py
+
+# Run benchmarking scripts
+python benchmarking/scripts/llm_sql_evaluator.py
+```
+
+---
+
+## 📖 Documentation
+
+- **[STRUCTURE.md](STRUCTURE.md)** - Detailed project structure and organization
+- **[docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md)** - Local development setup guide
+- **[docs/LLM_USAGE.md](docs/LLM_USAGE.md)** - LLM provider configuration
+- **[docs/Dynamic_Sports_QA.pdf](docs/Dynamic_Sports_QA.pdf)** - Research paper
+
+---
+
+## 🎓 Citation
+
+If you use SportSQL or DSQABENCH in your research, please cite:
+
+```bibtex
+@inproceedings{ahuja-etal-2025-sportsql,
+    title = "{SPORTSQL}: An Interactive System for Real-Time Sports Reasoning and Visualization",
+    author = "Ahuja, Naman and others",
+    booktitle = "Proceedings of the 2025 International Joint Conference on Natural Language Processing: System Demonstrations",
+    year = "2025",
+    url = "https://aclanthology.org/2025.ijcnlp-demo.11",
+    pages = "TBD"
+}
+```
+
+---
+
+## 🛠️ Development
+
+### Running Tests
+
+```bash
+# Test imports after reorganization
+python test_imports.py
+
+# Run evaluation tests
+python scripts/test_evaluation.py
+```
 
 ### Database Management
 
 ```bash
-# Refresh local database with latest data
-python setup_local_db.py
+# Refresh local database with latest FPL data
+python src/database/setup_local_db.py
 
-# Update remote database (production)
-python update_db.py --server remote
-
-# Test database connections
-python -c "from db_config import print_db_info; print_db_info()"
+# Update specific player data
+python scripts/update_db.py
 ```
 
-### Deployment Options
+### Adding New Features
 
-#### Local Development
+The modular architecture makes it easy to extend:
 
-- Uses PostgreSQL (free)
-- Fast queries (no network latency)
-- Full offline development
+1. **New query types**: Add to `src/nl2sql/` or `src/deep_research/`
+2. **New LLM providers**: Extend `src/llm/wrapper.py`
+3. **New visualizations**: Add to `src/visualization/`
+4. **New data sources**: Extend `src/database/operations.py`
 
-#### Production (GCP Cloud Run)
-
-- Uses MySQL Cloud SQL
-- Automatic scaling
-- Production-grade reliability
-- Configured via `cloudbuild.yml`
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-1. **PostgreSQL Connection Failed**
-
-   ```bash
-   # Check if PostgreSQL is running
-   brew services list | grep postgresql
-
-   # Start PostgreSQL
-   brew services start postgresql@15
-   ```
-
-2. **Module Not Found Errors**
-
-   ```bash
-   # Ensure conda environment is activated
-   conda activate sportsql
-
-   # Reinstall dependencies
-   pip install -r requirements.txt
-   ```
-
-3. **Database Setup Issues**
-
-   ```bash
-   # Re-run database setup
-   python setup_local_db.py
-
-   # Check database configuration
-   python -c "from db_config import get_db_config; print(get_db_config('local').get_database_info())"
-   ```
-
-4. **API Key Issues**
-   - Verify your Gemini API key in `.env`
-   - Check API key permissions in Google AI Studio
-
-### Environment Variables
-
-Make sure your `.env` file exists and contains all required variables:
-
-```bash
-# Check if .env file exists
-ls -la .env
-
-# Verify environment variables are loaded
-python -c "import os; from dotenv import load_dotenv; load_dotenv(); print('API_KEY loaded:', bool(os.getenv('API_KEY')))"
-```
-
-## 🚀 Production Deployment
-
-### Google Cloud Platform
-
-1. **Prerequisites**:
-
-   - GCP account with billing enabled
-   - Cloud SQL MySQL instance
-   - Cloud Run API enabled
-
-2. **Deploy**:
-
-   ```bash
-   # Build and deploy using Cloud Build
-   gcloud builds submit --config cloudbuild.yml
-   ```
-
-3. **Environment Variables**: Already configured in `cloudbuild.yml`
-
-## 🔧 Development Workflow
-
-1. **Daily Development**:
-
-   ```bash
-   conda activate sportsql
-   python app.py --server local
-   ```
-
-2. **Testing with Production Data**:
-
-   ```bash
-   python app.py --server remote
-   ```
-
-3. **Database Updates**:
-   ```bash
-   python setup_local_db.py  # Local refresh
-   python update_db.py --server remote  # Production update
-   ```
+---
 
 ## 🤝 Contributing
 
+We welcome contributions! Please:
+
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Set up conda environment (`conda create -n sportsql-dev python=3.11`)
-4. Make your changes and test locally
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
 
 ## 🙏 Acknowledgments
 
-- **Fantasy Premier League API** for providing comprehensive soccer data
-- **Google Gemini AI** for advanced natural language processing
-- **Flask** framework for robust web application development
-- **PostgreSQL** and **MySQL** for reliable database solutions
-- **Google Cloud Platform** for scalable deployment infrastructure
+- **Fantasy Premier League API** for comprehensive soccer data
+- **Google Gemini AI** and **OpenAI** for LLM capabilities
+- **PostgreSQL** for robust database support
+- **Flask** for web framework
+- **CORAL Lab at ASU** for research support
 
-## 📚 Additional Resources
+---
 
-- [LOCAL_SETUP.md](LOCAL_SETUP.md) - Detailed local development setup
-- [Fantasy Premier League API Documentation](https://fantasy.premierleague.com/api/)
-- [Google Gemini AI Documentation](https://ai.google.dev/)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [Conda Documentation](https://docs.conda.io/)
+## 📧 Contact
+
+For questions or issues:
+- Open an issue on [GitHub](https://github.com/coral-lab-asu/SportSQL/issues)
+- Check the [documentation](docs/)
+- Read the [paper](https://aclanthology.org/2025.ijcnlp-demo.11/)
+
+---
+
+## 🌟 Star History
+
+If you find SportSQL useful, please consider giving it a star ⭐!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=coral-lab-asu/SportSQL&type=Date)](https://star-history.com/#coral-lab-asu/SportSQL&Date)
