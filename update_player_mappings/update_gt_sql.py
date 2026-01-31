@@ -21,7 +21,7 @@ if 'FORCE_REMOTE_DB' in os.environ:
 if '--server' not in sys.argv:
     sys.argv.extend(['--server', 'local'])
 
-from mariadb_access import run_sql
+from src.database.operations import run_sql
 
 load_dotenv()
 

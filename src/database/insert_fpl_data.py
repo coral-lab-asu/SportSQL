@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import sys
 from pathlib import Path
-from db_config import get_db_config
+from src.database.config import get_db_config
 from sqlalchemy import text, inspect
 
 def main():

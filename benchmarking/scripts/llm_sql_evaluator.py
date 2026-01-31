@@ -6,7 +6,7 @@ Re-evaluates zero accuracy cases using semantic understanding instead of exact o
 
 import pandas as pd
 import json
-from llm_wrapper import LLMWrapper
+from src.llm.wrapper import LLMWrapper
 import sys
 from datetime import datetime
 import concurrent.futures

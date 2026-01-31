@@ -21,7 +21,7 @@ import os
 import re
 from typing import Any, Dict, List, Tuple
 
-from insights_config import (
+from src.deep_research.config import (
     get_constraints,
     MAX_SUBQUERIES,
     ROW_LIMIT,
@@ -29,10 +29,10 @@ from insights_config import (
     LLM_TIMEOUT_SEC,
 )
 # get_global_llm imported lazily to simplify testing and avoid dotenv dependency at import time
-from insights_schema import SCHEMA_SUMMARY
+from src.deep_research.schema import SCHEMA_SUMMARY
 
 
-PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+PROMPTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "llm", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "llm", "prompts"))
 PLANNER_PROMPT_PATH = os.path.join(PROMPTS_DIR, "prompt3_planner.txt")
 PLANNER_NL_PROMPT_PATH = os.path.join(PROMPTS_DIR, "prompt3_planner_nl.txt")
 
@@ -238,7 +238,7 @@ def plan_queries(question: str, entities: Dict[str, Any], server_type: str = "re
     }
 
     prompt_text = f"{planner_prompt}\n\nINPUT:\n{json.dumps(input_payload, ensure_ascii=False)}"
-    from llm_wrapper import get_global_llm
+    from src.llm.wrapper import get_global_llm
     llm = get_global_llm()
     raw = llm.generate_content(prompt_text, timeout=LLM_TIMEOUT_SEC)
 
@@ -294,7 +294,7 @@ def plan_questions_nl(question: str, entities: Dict[str, Any], server_type: str 
     }
     prompt_text = f"{planner_prompt}\n\nINPUT:\n{json.dumps(input_payload, ensure_ascii=False)}"
 
-    from llm_wrapper import get_global_llm
+    from src.llm.wrapper import get_global_llm
     llm = get_global_llm()
     raw = llm.generate_content(prompt_text, timeout=LLM_TIMEOUT_SEC)
 

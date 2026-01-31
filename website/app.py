@@ -3,13 +3,13 @@ import json
 import sys
 import os
 import argparse
-from gemini_api import generate_sql, generate_visualization
-from mariadb_access import return_query, get_player_id_from_question, update_player_data
-from insights_planner import plan_questions_nl
-from insights_sql_compiler import compile_questions_to_sql
-from player_refresh import refresh_players_with_like_and_llm, cleanup_on_demand_tables
-from player_refresh import extract_player_ids_from_refresh_map
-from llm_wrapper import get_global_llm
+from src.nl2sql.generator import generate_sql, generate_visualization
+from src.database.operations import return_query, get_player_id_from_question, update_player_data
+from src.deep_research.planner import plan_questions_nl
+from src.deep_research.compiler import compile_questions_to_sql
+from src.deep_research.player_refresh import refresh_players_with_like_and_llm, cleanup_on_demand_tables
+from src.deep_research.player_refresh import extract_player_ids_from_refresh_map
+from src.llm.wrapper import get_global_llm
 import pandas as pd
 from subprocess import run
 from matplotlib.colors import ListedColormap
@@ -17,7 +17,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from db_config import get_db_config, print_db_info
+from src.database.config import get_db_config, print_db_info
 
 app = Flask(__name__)
 

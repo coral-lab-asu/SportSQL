@@ -13,15 +13,15 @@ import matplotlib.pyplot as plt
 
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
-from db_config import get_db_config, get_engine
-from llm_wrapper import get_global_llm
+from src.database.config import get_db_config, get_engine
+from src.llm.wrapper import get_global_llm
 
 load_dotenv()
 
 # Database configuration now handled by db_config module
 db_config = get_db_config()
 
-PROMPT_DIR = "prompts"
+PROMPT_DIR = os.path.join(os.path.dirname(__file__), os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "llm", "prompts"))
 EXTRACT_PROMPT_PATH = os.path.join(PROMPT_DIR, "prompt1_extract.txt")
 BASE_PROMPT_PATH    = os.path.join(PROMPT_DIR, "prompt2_sql.txt")
 

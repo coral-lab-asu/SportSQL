@@ -19,9 +19,9 @@ import os
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
-from insights_config import ROW_LIMIT, LLM_TIMEOUT_SEC, get_constraints
+from src.deep_research.config import ROW_LIMIT, LLM_TIMEOUT_SEC, get_constraints
 
-PROMPTS_DIR = os.path.join(os.path.dirname(__file__), "prompts")
+PROMPTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "llm", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "llm", "prompts"))
 PROMPT2_PATH = os.path.join(PROMPTS_DIR, "prompt2_sql.txt")
 
 
@@ -120,9 +120,9 @@ def _llm_fix_sql(sql: str) -> Tuple[str, List[str]]:
     notes: List[str] = []
     try:
         # Lazy imports to avoid load-time dependencies
-        from llm_wrapper import get_global_llm
-        from insights_schema import SCHEMA_SUMMARY
-        from insights_config import LLM_TIMEOUT_SEC
+        from src.llm.wrapper import get_global_llm
+        from src.deep_research.schema import SCHEMA_SUMMARY
+        from src.deep_research.config import LLM_TIMEOUT_SEC
 
         prompt = (
             "You are a PostgreSQL SQL fixer.\n"
@@ -244,7 +244,7 @@ Now return ONLY the SQL in a fenced block:
 
 
 def _call_llm(prompt: str) -> str:
-    from llm_wrapper import get_global_llm
+    from src.llm.wrapper import get_global_llm
     llm = get_global_llm()
     return llm.generate_content(prompt, timeout=LLM_TIMEOUT_SEC)
 

@@ -6,7 +6,7 @@ from unidecode import unidecode
 from bs4 import BeautifulSoup
 import os
 from dotenv import load_dotenv
-from db_config import get_db_config, get_engine
+from src.database.config import get_db_config, get_engine
 
 load_dotenv()
 

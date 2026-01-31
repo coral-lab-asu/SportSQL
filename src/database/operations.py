@@ -10,9 +10,9 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine, Result
 from dotenv import load_dotenv
 import os
-from db_config import get_db_config, get_engine
-from llm_wrapper import get_global_llm
-from schemas import (
+from src.database.config import get_db_config, get_engine
+from src.llm.wrapper import get_global_llm
+from src.database.schemas import (
     PLAYER_HISTORY_SCHEMA,
     PLAYER_PAST_SCHEMA,
     PLAYER_FUTURE_SCHEMA,

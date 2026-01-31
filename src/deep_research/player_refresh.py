@@ -6,9 +6,9 @@ Extracted from run_execute_plans.py to be reusable in both compile-only and exec
 
 import json
 from typing import Any, Dict, List
-from mariadb_access import return_query, update_player_data
-from db_config import get_engine
-from schemas import PLAYER_HISTORY_SCHEMA, PLAYER_PAST_SCHEMA, PLAYER_FUTURE_SCHEMA, get_create_table_sql
+from src.database.operations import return_query, update_player_data
+from src.database.config import get_engine
+from src.database.schemas import PLAYER_HISTORY_SCHEMA, PLAYER_PAST_SCHEMA, PLAYER_FUTURE_SCHEMA, get_create_table_sql
 from sqlalchemy import text
 
 
@@ -160,7 +160,7 @@ def refresh_players_with_like_and_llm(entities: Dict[str, Any], include_debug: b
         if pid == 0:
             llm_choice_raw = ""
             try:
-                from llm_wrapper import get_global_llm
+                from src.llm.wrapper import get_global_llm
                 llm = get_global_llm()
                 prompt = (
                     "You are matching a Premier League player name to a candidate list from a database.\n"

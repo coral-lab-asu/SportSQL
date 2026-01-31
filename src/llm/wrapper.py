@@ -7,7 +7,7 @@ Provides a unified interface to switch between different LLM providers:
 - OpenAI GPT
 
 Usage:
-    from llm_wrapper import LLMWrapper
+    from src.llm.wrapper import LLMWrapper
     
     llm = LLMWrapper(provider='gemini')  # or 'openai'
     response = llm.generate_content(prompt)

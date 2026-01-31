@@ -16,13 +16,13 @@ import requests
 import numpy as np
 from sqlalchemy import create_engine, text, MetaData, Table, Column, Integer, String, Float, Boolean, DateTime
 from dotenv import load_dotenv
-from schemas import get_create_table_sql, PLAYER_HISTORY_SCHEMA, PLAYER_PAST_SCHEMA, PLAYER_FUTURE_SCHEMA
+from src.database.schemas import get_create_table_sql, PLAYER_HISTORY_SCHEMA, PLAYER_PAST_SCHEMA, PLAYER_FUTURE_SCHEMA
 from unidecode import unidecode
 from bs4 import BeautifulSoup
 
-# Add current directory to path to import db_config
+# Add current directory to path to import src.database.config as db_config
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from db_config import get_db_config, get_engine
+from src.database.config import get_db_config, get_engine
 
 load_dotenv()
 

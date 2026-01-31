@@ -9,7 +9,7 @@ Note: History tables (player_history, player_past, player_future) do NOT
 contain first_name/second_name columns. Use JOINs with players table for names.
 """
 
-from schemas import get_column_names, ALL_SCHEMAS
+from src.database.schemas import get_column_names, ALL_SCHEMAS
 
 def generate_schema_summary():
     """Generate schema summary from master schemas."""

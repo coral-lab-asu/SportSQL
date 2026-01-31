@@ -32,9 +32,9 @@ if '--server' not in sys.argv:
     sys.argv.extend(['--server', 'local'])
 
 # Import SportSQL components (they will now use local database)
-from gemini_api import generate_sql
-from mariadb_access import return_query, get_player_id_from_question, update_player_data
-from db_config import get_db_config
+from src.nl2sql.generator import generate_sql
+from src.database.operations import return_query, get_player_id_from_question, update_player_data
+from src.database.config import get_db_config
 
 
 class PipelineEvaluator:
