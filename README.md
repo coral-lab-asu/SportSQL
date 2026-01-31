@@ -52,7 +52,9 @@ python update_db.py
 
 ## Usage
 
-1. Start the Flask application:
+### Main Application (Natural Language to SQL)
+
+1. Start the main Flask application:
 ```bash
 python app.py
 ```
@@ -66,24 +68,60 @@ http://localhost:5000
 4. Toggle visualization if desired
 5. Click "Submit Query" to see the results
 
+### Visualization Gallery (Optional)
+
+1. Start the visualization gallery application:
+```bash
+cd viz-static-site
+python app.py
+```
+
+2. Open your web browser and navigate to:
+```
+http://localhost:5005
+```
+
+3. Select from pre-defined visualizations to explore Premier League statistics
+
+## Website Index Files
+
+This repository contains **two separate Flask applications**:
+
+1. **Main Application** (runs on port 5000):
+   - Entry point: `app.py`
+   - **Index file**: `templates/index.html`
+   - Purpose: Natural language to SQL query conversion and database interaction
+
+2. **Visualization Gallery** (runs on port 5005):
+   - Entry point: `viz-static-site/app.py`
+   - **Index file**: `viz-static-site/templates/index.html`
+   - Purpose: Pre-defined visualizations of Premier League data
+
 ## Project Structure
 
 ```
-natural-language-soccer-query/
-├── app.py                  # Main Flask application
+SportSQL/
+├── app.py                  # Main Flask application (port 5000)
 ├── gemini_api.py           # Gemini API interface
 ├── mariadb_access.py       # Database access
 ├── update_db.py            # Database update script
 ├── static/
 │   ├── css/
-│   │   └── style.css       # Styling
+│   │   └── style.css       # Main app styling
 │   └── js/
-│       └── main.js         # Frontend functionality
-└── templates/
-    ├── index.html          # Main page
-    ├── about.html          # About page
-    ├── dataset.html        # Dataset information
-    └── paper.html          # Research paper
+│       └── main.js         # Main app frontend functionality
+├── templates/
+│   ├── index.html          # Main application index (PRIMARY)
+│   ├── about.html          # About page
+│   ├── dataset.html        # Dataset information
+│   └── paper.html          # Research paper
+└── viz-static-site/        # Visualization Gallery application
+    ├── app.py              # Visualization Flask app (port 5005)
+    ├── static/
+    │   └── plots/          # Generated plot images
+    ├── templates/
+    │   └── index.html      # Visualization gallery index
+    └── *.csv               # Data files for visualizations
 ```
 
 ## Example Queries
