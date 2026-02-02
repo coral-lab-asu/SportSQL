@@ -7,6 +7,8 @@
 
 > **A modular, interactive system for natural language querying and visualization of dynamic sports data, with a focus on the English Premier League (EPL).**
 
+![System Workflow](Screenshot%202026-02-01%20at%205.36.09%20PM.png)
+
 SportSQL translates user questions into executable SQL over a live, temporally indexed database constructed from real-time Fantasy Premier League (FPL) data. It supports both tabular and visual outputs, leveraging symbolic reasoning capabilities of Large Language Models (LLMs) for query parsing, schema linking, and visualization selection.
 
 📄 **Paper**: [SPORTSQL: An Interactive System for Real-Time Sports Reasoning and Visualization](https://aclanthology.org/2025.ijcnlp-demo.11/)  
