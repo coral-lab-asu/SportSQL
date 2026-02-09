@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="SportSQL: Interactive System for Real-Time Sports Reasoning and Visualization">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SportSQL: Interactive System for Real-Time Sports Reasoning and Visualization</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">SportSQL: Interactive System for Real-Time Sports Reasoning and Visualization</h1>
+          <div class="is-size-4 publication-authors">
+            <span class="author-block"><a href="https://mcharold404.github.io/">Naman Ahuja</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://fenil-b.github.io">Fenil Bardoliya</a><sup>1</sup>,</span>
+            <span class="author-block">Chris Bryan<sup>1</sup>,</span>
+            <span class="author-block"><a href="https://vgupta123.github.io/">Vivek Gupta</a><sup>1</sup></span>
+          </div>
+          <div class="is-size-4 publication-authors">
+            <span class="author-block"><sup>1</sup>Arizona State University</span>
+          </div>
+
+          <br>
+          <center><h2 class="title is-3" style="color: #667eea;">IJCNLP 2025 (System Demonstrations)</h2></center>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://aclanthology.org/2025.ijcnlp-demo.11/" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/coral-lab-asu/SportSQL" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/coral-lab-asu/SportSQL" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-play"></i></span>
+                  <span>Demo / Repo</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body" style="text-align: center;">
+      <img src="./static/images/hero.png" alt="SportSQL system workflow" style="width: 75%; max-width: 800px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: inline-block;">
+      <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem; font-size: 1.1rem;">
+        Natural language to SQL and visualizations over live Fantasy Premier League data
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Abstract</h2>
+        <div class="content has-text-justified" style="font-size: 1.05rem; line-height: 1.7;">
+          <p>
+            SportSQL is a modular, interactive system for natural language querying and visualization of dynamic sports data, with a focus on the English Premier League (EPL). It translates user questions into executable SQL over a live, temporally indexed database constructed from real-time Fantasy Premier League (FPL) data. The system supports both tabular and visual outputs, leveraging the symbolic reasoning capabilities of Large Language Models (LLMs) for query parsing, schema linking, and visualization selection.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 1rem; background-color: #fafafa;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Introduction</h2>
+        <div class="content has-text-justified" style="font-size: 1.05rem; line-height: 1.7;">
+          <p>
+            Asking complex questions over sports data usually requires writing SQL or using fixed dashboards. SportSQL lets users ask questions in plain English and get back either tables or charts. The system combines real-time FPL data, a temporally indexed PostgreSQL database, and LLM-powered NL2SQL with optional multi-step “deep research” and automatic visualization selection.
+          </p>
+          <p>
+            This approach supports simple lookups (“How many goals has Haaland scored?”), multi-query analysis (“Compare Haaland and Salah over the last 3 seasons”), and chart generation (“Show me a chart of top scorers”), all through a single web interface.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 1.5rem;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Key Features</h2>
+
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <p style="font-size: 1.15rem; font-weight: 500; margin: 0; text-align: center;">
+            Three query modes: Single NL2SQL, Deep Research, and Interactive Visualization
+          </p>
+        </div>
+
+        <div class="content has-text-justified" style="font-size: 1.05rem; line-height: 1.7;">
+          <p><strong>1. Single-Query NL2SQL</strong> — Direct translation of natural language to SQL. Fast, single-shot execution; ideal for simple questions about current season stats (e.g., “How many goals has Erling Haaland scored?”).</p>
+          <p style="margin-top: 0.6rem;"><strong>2. Deep Research Mode</strong> — Multi-query comprehensive analysis. Automatic query decomposition into sub-questions, historical data across multiple seasons, player comparison and trend analysis (e.g., “Compare Haaland and Salah’s offensive performance over the last 3 seasons”).</p>
+          <p style="margin-top: 0.6rem;"><strong>3. Interactive Visualization</strong> — Automatic chart generation. LLM-powered visualization selection, dynamic charts from query results, and a pre-built gallery of common visualizations.</p>
+
+          <p style="margin-top: 1.5rem;"><strong>System architecture</strong></p>
+          <ul>
+            <li><strong>Real-time data:</strong> Live updates from Fantasy Premier League API</li>
+            <li><strong>Temporal indexing:</strong> Historical data across multiple seasons</li>
+            <li><strong>LLM integration:</strong> Support for both Gemini and OpenAI models</li>
+            <li><strong>PostgreSQL backend:</strong> Efficient query execution and data storage</li>
+            <li><strong>Modular design:</strong> Clean separation of concerns for easy extension</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 1.5rem; background-color: #fafafa;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">DSQABENCH: Dynamic Sport Question Answering Benchmark</h2>
+        <div class="content has-text-justified" style="font-size: 1.05rem; line-height: 1.7;">
+          <p>
+            To evaluate system performance, we introduce <strong>DSQABENCH</strong>, comprising:
+          </p>
+          <ul>
+            <li><strong>1,700+ queries</strong> with SQL programs and gold answers</li>
+            <li><strong>Database snapshots</strong> for reproducible evaluation</li>
+            <li><strong>Diverse query types:</strong> Simple lookups, aggregations, comparisons, temporal queries</li>
+            <li><strong>Real-world complexity:</strong> Ambiguous player names, team aliases, and temporal context</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 1.5rem;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Example Queries</h2>
+        <div class="content" style="font-size: 1.05rem; line-height: 1.7;">
+          <p><strong>Simple:</strong></p>
+          <ul>
+            <li>“Who are the top 5 goal scorers this season?”</li>
+            <li>“How many assists does Saka have?”</li>
+            <li>“Which team has the most clean sheets?”</li>
+          </ul>
+          <p style="margin-top: 1rem;"><strong>Deep Research:</strong></p>
+          <ul>
+            <li>“Compare Erling Haaland and Mohamed Salah’s offensive performance over the last 3 seasons”</li>
+            <li>“Analyze Liverpool’s defensive statistics and trends this season”</li>
+            <li>“Show me players who consistently outperform their expected goals”</li>
+          </ul>
+          <p style="margin-top: 1rem;"><strong>Visualization:</strong></p>
+          <ul>
+            <li>“Show me a chart of top scorers”</li>
+            <li>“Visualize the relationship between expected goals and actual goals for Haaland”</li>
+            <li>“Plot team standings by strength”</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 1.5rem; background-color: #fafafa;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Screenshots</h2>
+        <div class="content has-text-justified" style="font-size: 1.05rem; line-height: 1.7;">
+          <p>SportSQL web interface supports direct and deep-analysis modes with optional visualization.</p>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <img src="./static/images/visualization.png" alt="SportSQL visualization" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        </div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <img src="./static/images/team_standings.png" alt="Team standings example" style="max-width: 90%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 1.5rem;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Quick Start</h2>
+        <div class="content" style="font-size: 1.05rem; line-height: 1.7;">
+          <p><strong>Prerequisites:</strong> Python 3.10+ (&lt; 3.12), PostgreSQL 15+, Gemini or OpenAI API key.</p>
+          <pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 8px; overflow-x: auto;"><code>git clone https://github.com/coral-lab-asu/SportSQL.git
+cd SportSQL
+conda env create -f environment.yml
+conda activate sportsql
+# Set up .env with DB credentials and API keys
+python src/database/setup_local_db.py
+cd website && python app.py --server local --port 5000</code></pre>
+          <p>Open <code>http://localhost:5000</code>. For full setup (PostgreSQL, env vars, LLM config), see the <a href="https://github.com/coral-lab-asu/SportSQL#-quick-start">README</a> and <a href="./LOCAL_SETUP.md">LOCAL_SETUP.md</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX" style="background-color: #f9f9f9;">
+  <div class="container is-max-desktop content">
+    <h2 class="title has-text-centered" style="margin-bottom: 1.5rem;">BibTeX</h2>
+    <pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 1.5rem; border-radius: 8px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><code>@inproceedings{ahuja-etal-2025-sportsql,
+    title = "{SPORTSQL}: An Interactive System for Real-Time Sports Reasoning and Visualization",
+    author = "Ahuja, Naman and others",
+    booktitle = "Proceedings of the 2025 International Joint Conference on Natural Language Processing: System Demonstrations",
+    year = "2025",
+    url = "https://aclanthology.org/2025.ijcnlp-demo.11",
+    pages = "TBD"
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer" style="background-color: #2d3748; color: #e2e8f0; padding: 2rem 0;">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8 has-text-centered">
+        <div class="content">
+          <p style="font-size: 0.9rem; color: #cbd5e0;">
+            SportSQL — CORAL Lab, Arizona State University. 
+            Fantasy Premier League API, Google Gemini, OpenAI, PostgreSQL. 
+            This page style was adopted from the <a href="https://nerfies.github.io" target="_blank" style="color: #667eea;">Nerfies</a> project page.
+          </p>
+          <p style="font-size: 0.85rem; color: #a0aec0; margin-top: 0.5rem;">
+            <a href="https://github.com/coral-lab-asu/SportSQL/blob/main/LICENSE" style="color: #667eea;">MIT License</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

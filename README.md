@@ -12,7 +12,8 @@
 SportSQL translates user questions into executable SQL over a live, temporally indexed database constructed from real-time Fantasy Premier League (FPL) data. It supports both tabular and visual outputs, leveraging symbolic reasoning capabilities of Large Language Models (LLMs) for query parsing, schema linking, and visualization selection.
 
 📄 **Paper**: [SPORTSQL: An Interactive System for Real-Time Sports Reasoning and Visualization](https://aclanthology.org/2025.ijcnlp-demo.11/)  
-🌐 **Demo**: [https://github.com/coral-lab-asu/SportSQL](https://github.com/coral-lab-asu/SportSQL)
+🌐 **Project page**: [https://coral-lab-asu.github.io/SportSQL/](https://coral-lab-asu.github.io/SportSQL/)  
+🌐 **Demo / Code**: [https://github.com/coral-lab-asu/SportSQL](https://github.com/coral-lab-asu/SportSQL)
 
 ---
 
